@@ -1,4 +1,4 @@
-import React, { useState, memo } from 'react';
+import React, { useState, useCallback, memo } from 'react';
 
 
 const Form = memo(() => {
@@ -8,15 +8,15 @@ const Form = memo(() => {
   const { dispatch } = useContext(TableContext);
 
   const onChangeRow = useCallback((e) => {
-   
+    setRow(e.target.value);  
   }, []);
 
   const onChangeCell = useCallback((e) => {
-   
+    setCell(e.target.value);
   }, []);
 
   const onChangeMine = useCallback((e) => {
-    
+    setMine(e.target.value);    
   }, []);
 
   const onClickBtn = useCallback(() => {
@@ -25,10 +25,10 @@ const Form = memo(() => {
 
   return (
     <div>
-      <input type="number" placeholder="세로" value={row} onChange={onChangeRow} />
-      <input type="number" placeholder="가로" value={cell} onChange={onChangeCell} />
-      <input type="number" placeholder="지뢰" value={mine} onChange={onChangeMine} />
-      <button onClick={onClickBtn}>시작</button>
+      <input type="number" placeholder="how many row" value={row} onChange={onChangeRow} />
+      <input type="number" placeholder="how many cell" value={cell} onChange={onChangeCell} />
+      <input type="number" placeholder="how many mine" value={mine} onChange={onChangeMine} />
+      <button onClick={onClickBtn}>START</button>
     </div>
   );
 });
