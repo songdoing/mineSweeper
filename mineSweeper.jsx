@@ -8,24 +8,44 @@ export const TableContext = createContext({
     dispatch : () => {},
 });
 
+export const CODE = {
+    MINE: -7,
+    NORMAL: -1,
+    QUESTION : -2,
+    FLAG: -3,
+    QUESTION_MINE: -4,
+    FLAG_MINE: -5,
+    CLICKED_MINE : -6,
+    OPENED : 0, //0 이상이면 모두 opened인것임
+}
+
 const initialState = {
-    tableData : [],
+    tableData : [], //2차원 배열이 될거임
     timer : 0,
     result : '',
 };
 
+export const START_GAME = 'START_GAME';
+
 const reducer = (state, action) => {
     switch (action.type) {
+        case START_GAME :
+            return {
+                ...state,
+                tableData : plantMine(action.row, action.cell, action.mine)
+            };
         default : 
         return state;
     }
 };
 
 const MineSweeper = () => {
-    //cashing 해준다
+    
     const [state, dispatch] = useReducer(reducer, initialState);
+    //cashing 해준다: useMemo를 이용해서 state.tableData가 바뀔때만 실행되도록 해야
+    //contextAPI의 매번 랜더링되어 발생하는 성능저하를 막을 수 있다.
+    const value = useMemo(() => ({tableData: state.tableData, dispatch}), [state.tableData]);
 
-    const value = useMemo(() => ({tableData: state.tableData, dispatch}), [])
     return(
         //value안에 컴퍼넌트에서 가져다 쓸 데이터를 적는다..근데 여기다 적으면
         //render될때마다 value라는 객체 생성되고 그 밑에 있는 컴퍼넌트도 다시 재렌더링
