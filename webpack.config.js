@@ -2,7 +2,7 @@ const path = require("path");
 const RefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
 
 module.exports = {
-  name: "minesweeper",
+  name: "MineSweeper",
   mode: "development",
   devtool: "eval",
   resolve: {
@@ -36,6 +36,7 @@ module.exports = {
             "react-refresh/babel",
           ],
         },
+        exclude: path.join(__dirname, "node_modules"),
       },
     ],
   },
@@ -43,7 +44,7 @@ module.exports = {
 
   output: {
     path: path.join(__dirname, "dist"),
-    filename: "app.js",
+    filename: "[name].js",
     publicPath: "/dist",
   },
   devServer: {

@@ -27,20 +27,20 @@ const initialState = {
 
 //지뢰를 심는 함수
 const plantMine = (row, cell, mine) => {
+    console.log(row, cell, mine);
     const candidate = Array(row * cell).fill().map((arr, i) => {
-        return i;
+        return i; //0~99
     });
     const shuffle = [];
     while(candidate.length > row * cell - mine) {
         const chosen = candidate.splice(Math.floor(Math.random() * candidate.length), 1)[0];
         shuffle.push(chosen);
-
     }
     const data = [];
-    for(let i = 0; i <row; i++){
+    for(let i = 0; i <row; i++){ //100칸중에 정상적인 칸
         const rowData = [];
         data.push(rowData);
-        for(let j =0 ; j < clearImmediate; j++) {
+        for(let j =0 ; j < cell; j++) {
             rowData.push(CODE.NORMAL);
         }
     }
@@ -51,7 +51,7 @@ const plantMine = (row, cell, mine) => {
         data[ver][hor] = CODE.MINE;
     }
     console.log(data);
-    return data;
+    return data;  //tableData
 };
 
 export const START_GAME = 'START_GAME';
