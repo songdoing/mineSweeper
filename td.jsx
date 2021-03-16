@@ -1,5 +1,5 @@
-import React, {useContext} from 'react';
-import { CODE, TableContext } from './mineSweeper';
+import React, {useContext, useCallback} from 'react';
+import { CODE, OPEN_CELL, TableContext } from './mineSweeper';
 
 const getTdStyle = (code) => {
     switch (code) {
@@ -10,7 +10,7 @@ const getTdStyle = (code) => {
             };
         case CODE.OPENED :
             return {
-                background : 'white',
+                background : 'skyblue',
             };
         default : 
             return {
@@ -31,10 +31,18 @@ const getTdText = (code) => {
 };
 
 const Td = ( { rowIndex, cellIndex }) => {
-    const { tableData} = useContext(TableContext);
+    const { tableData, dispatch} = useContext(TableContext);
+
+    const onClickTd = useCallback(() => {
+        
+        // td를 클릭하면, dispatch에 클릭한 정보가 들어가고, MineSweeper에서 정보변경
+        dispatch({ type : OPEN_CELL, row:rowIndex, cell: cellIndex });
+    }, []);
+
     return (
         <td
             style = {getTdStyle(tableData[rowIndex][cellIndex])}
+            onClick = {onClickTd}
         >{getTdText(tableData[rowIndex][cellIndex])}</td>
     );
 };

@@ -55,6 +55,7 @@ const plantMine = (row, cell, mine) => {
 };
 
 export const START_GAME = 'START_GAME';
+export const OPEN_CELL = 'OPEN_CELL';
 
 const reducer = (state, action) => {
     switch (action.type) {
@@ -63,6 +64,16 @@ const reducer = (state, action) => {
                 ...state,
                 tableData : plantMine(action.row, action.cell, action.mine)
             };
+        case OPEN_CELL : {
+            const tableData = [...state.tableData];
+            tableData[action.row] = [...state.tableData[action.row]];
+            tableData[action.row][action.cell] = CODE.OPENED;
+            // 클릭한 칸이 code.opened로 바뀐다, td에서 dispatch해주라
+            return {
+                ...state,
+                tableData,                
+            };
+        }
         default : 
         return state;
     }
