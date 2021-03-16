@@ -6,8 +6,8 @@ const Table = () => {
     const { tableData } = useContext(TableContext);
     return (
         <table> 
-            {/* 행수열수 확인해서 행수 만들어주기 */}
-            {Array(tableData.length).fill().map((tr,i) => <Tr />)}
+            {/* 행수열수 확인해서 행수 만들어주기 , tr에다가 몇번째 줄인지 넘기기*/}
+            {Array(tableData.length).fill().map((tr,i) => <Tr rowIndex = {i} />)}
         </table>
     )
 

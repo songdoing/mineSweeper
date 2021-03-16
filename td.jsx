@@ -1,9 +1,11 @@
-import React from 'react';
+import React, {useContext} from 'react';
+import { TableContext } from './mineSweeper';
 
-const Td = () => {
+const Td = ( { rowIndex, cellIndex }) => {
+    const { tableData} = useContext(TableContext);
     return (
-        <td></td>
-    )
+        <td>{tableData[rowIndex][cellIndex]}</td>
+    );
 };
 
 export default Td;
