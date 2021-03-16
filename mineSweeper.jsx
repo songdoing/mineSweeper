@@ -5,6 +5,7 @@ import Form from './form';
 export const TableContext = createContext({
     //초기값설정, 일단 모양만 그려
     tableData : [],
+    halted : true,
     dispatch : () => {},
 });
 
@@ -23,6 +24,7 @@ const initialState = {
     tableData : [], //2차원 배열이 될거임
     timer : 0,
     result : '',
+    halted : true,
 };
 
 //지뢰를 심는 함수
@@ -56,13 +58,19 @@ const plantMine = (row, cell, mine) => {
 
 export const START_GAME = 'START_GAME';
 export const OPEN_CELL = 'OPEN_CELL';
+export const CLICK_MINE = 'CLICK_MINE';
+export const FLAG_CELL = 'FLAG_CELL';
+export const QUESTION_CELL = 'QUESTION_CELL';
+export const NORMALIZE_CELL = 'NORMALIZE_CELL';
+
 
 const reducer = (state, action) => {
     switch (action.type) {
         case START_GAME :
             return {
                 ...state,
-                tableData : plantMine(action.row, action.cell, action.mine)
+                tableData : plantMine(action.row, action.cell, action.mine),
+                halted : false,
             };
         case OPEN_CELL : {
             const tableData = [...state.tableData];
@@ -72,6 +80,57 @@ const reducer = (state, action) => {
             return {
                 ...state,
                 tableData,                
+            };
+        }
+        case CLICK_MINE : {
+            const tableData = [...state.tableData];
+            tableData[action.row] = [...state.tableData[action.row]];
+            tableData[action.row][action.cell] = CODE.CLICKED_MINE;
+            return {
+                ...state,
+                tableData,
+                halted : true,
+            };
+        }
+        //보통칸-깃발칸-물음표칸-보통칸 : 우클릭할때마다 순환
+        case FLAG_CELL : {
+            const tableData = [...state.tableData];
+            tableData[action.row] = [...state.tableData[action.row]];
+            if (tableData[action.row][action.cell] = CODE.MINE) {
+                tableData[action.row][action.cell] = CODE.FLAG_MINE;
+            } else {
+                tableData[action.row][action.cell] = CODE.FLAG;
+            }            
+            return {
+                ...state,
+                tableData,
+               
+            };
+        }
+        case QUESTION_CELL : {
+            const tableData = [...state.tableData];
+            tableData[action.row] = [...state.tableData[action.row]];
+            if (tableData[action.row][action.cell] = CODE.FLAG_MINE) {
+                tableData[action.row][action.cell] = CODE.QUESTION_MINE;
+            } else {
+                tableData[action.row][action.cell] = CODE.QUESTION;
+            }            
+            return {
+                ...state,
+                tableData,               
+            };
+        }
+        case NORMALIZE_CELL : {
+            const tableData = [...state.tableData];
+            tableData[action.row] = [...state.tableData[action.row]];
+            if (tableData[action.row][action.cell] = CODE.QUESTION_MINE) {
+                tableData[action.row][action.cell] = CODE.MINE;
+            } else {
+                tableData[action.row][action.cell] = CODE.NORMAL;
+            }            
+            return {
+                ...state,
+                tableData,               
             };
         }
         default : 
@@ -84,7 +143,8 @@ const MineSweeper = () => {
     const [state, dispatch] = useReducer(reducer, initialState);
     //cashing 해준다: useMemo를 이용해서 state.tableData가 바뀔때만 실행되도록 해야
     //contextAPI의 매번 랜더링되어 발생하는 성능저하를 막을 수 있다.
-    const value = useMemo(() => ({tableData: state.tableData, dispatch}), [state.tableData]);
+    const {tableData, halted, timer, result} = state;
+    const value = useMemo(() => ({tableData: tableData, halted : halted, dispatch}), [tableData, halted]);
 
     return(
         //value안에 컴퍼넌트에서 가져다 쓸 데이터를 적는다..근데 여기다 적으면
@@ -92,9 +152,9 @@ const MineSweeper = () => {
         //그래서 cashing를 해준다
         <TableContext.Provider value={value}>
         <Form />
-        <div>{state.timer}</div>
+        <div>{timer}</div>
         <Table />
-        <div>{state.result}</div>
+        <div>{result}</div>
         </TableContext.Provider>
     );
 };
