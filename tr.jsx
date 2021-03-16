@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useContext } from 'react';
+import { TableContext } from './mineSweeper';
 import Td from './td';
 
 const Tr = () => {
+    const { tableData } = useContext(TableContext);
     return (
         <tr>
-            <Td></Td>
+            {/* 하나의 행[0]에 열수 확인하여 td에 넣기 */}
+            {tableData[0] && Array(tableData[0].length).fill().map((td, i) => <Td />)}
         </tr>
     )
 };
