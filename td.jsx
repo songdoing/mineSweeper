@@ -10,7 +10,7 @@ const getTdStyle = (code) => {
             };
         case CODE.CLICKED_MINE :
             return {
-                background : 'black',
+                background : 'white',
             }
         case CODE.OPENED :
             return {
@@ -38,15 +38,15 @@ const getTdText = (code) => {
         case CODE.NORMAL :
             return  '';
         case CODE.MINE :
-            return 'X';
+            return '💣';
         case CODE.CLICKED_MINE : 
-            return 'B';
+            return '💥';
         case CODE.FLAG_MINE :
         case CODE.FLAG :
-            return '!';
+            return '🚩';
         case CODE.QUESTION_MINE :
         case CODE.QUESTION :
-            return '?';
+            return '❓';
         default :
             return '';    
     }
