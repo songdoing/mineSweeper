@@ -96,41 +96,46 @@ const reducer = (state, action) => {
         case FLAG_CELL : {
             const tableData = [...state.tableData];
             tableData[action.row] = [...state.tableData[action.row]];
-            if (tableData[action.row][action.cell] = CODE.MINE) {
+            if (tableData[action.row][action.cell] === CODE.MINE) {
                 tableData[action.row][action.cell] = CODE.FLAG_MINE;
+                console.log(tableData[action.row][action.cell]);
             } else {
                 tableData[action.row][action.cell] = CODE.FLAG;
-            }            
+                console.log(tableData[action.row][action.cell]);
+            }
             return {
                 ...state,
                 tableData,
-               
             };
         }
         case QUESTION_CELL : {
             const tableData = [...state.tableData];
             tableData[action.row] = [...state.tableData[action.row]];
-            if (tableData[action.row][action.cell] = CODE.FLAG_MINE) {
-                tableData[action.row][action.cell] = CODE.QUESTION_MINE;
+            if (tableData[action.row][action.cell] === CODE.FLAG_MINE) {
+              tableData[action.row][action.cell] = CODE.QUESTION_MINE;
+              console.log(tableData[action.row][action.cell]);
             } else {
-                tableData[action.row][action.cell] = CODE.QUESTION;
-            }            
+              tableData[action.row][action.cell] = CODE.QUESTION;
+              console.log(tableData[action.row][action.cell]);
+            }
             return {
-                ...state,
-                tableData,               
+              ...state,
+              tableData,
             };
         }
         case NORMALIZE_CELL : {
             const tableData = [...state.tableData];
             tableData[action.row] = [...state.tableData[action.row]];
-            if (tableData[action.row][action.cell] = CODE.QUESTION_MINE) {
-                tableData[action.row][action.cell] = CODE.MINE;
+            if (tableData[action.row][action.cell] === CODE.QUESTION_MINE) {
+              tableData[action.row][action.cell] = CODE.MINE;
+              console.log(tableData[action.row][action.cell]);
             } else {
-                tableData[action.row][action.cell] = CODE.NORMAL;
-            }            
+              tableData[action.row][action.cell] = CODE.NORMAL;
+              console.log(tableData[action.row][action.cell]);
+            }
             return {
-                ...state,
-                tableData,               
+              ...state,
+              tableData,
             };
         }
         default : 

@@ -24,7 +24,7 @@ const getTdStyle = (code) => {
         case CODE.FLAG_MINE :
         case CODE.FLAG :
             return {
-                background : 'red',
+                background : 'orange',
             };
         default : 
             return {
