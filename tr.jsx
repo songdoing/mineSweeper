@@ -1,8 +1,8 @@
-import React, { useContext } from 'react';
+import React, { useContext, memo } from 'react';
 import { TableContext } from './mineSweeper';
 import Td from './td';
 
-const Tr = ({ rowIndex }) => {
+const Tr = memo(({ rowIndex }) => {
     const { tableData } = useContext(TableContext);
     return (
         <tr>
@@ -12,6 +12,6 @@ const Tr = ({ rowIndex }) => {
             )}
         </tr>
     )
-};
+});
 
 export default Tr;
