@@ -22,9 +22,15 @@ export const CODE = {
 
 const initialState = {
     tableData : [], //2차원 배열이 될거임
+    data : {
+        row : 0,
+        cell : 0,
+        mine : 0,
+    },
     timer : 0,
     result : '',
     halted : true,
+    openedCount : 0,
 };
 
 //지뢰를 심는 함수
@@ -69,8 +75,15 @@ const reducer = (state, action) => {
         case START_GAME :
             return {
                 ...state,
+                data : { //배열보단 객체로 만들어야 갖다쓰기 편함
+                    row : action.row,
+                    cell : action.cell, 
+                    mine : action.mine,
+                },
+                openedCount : 0,
                 tableData : plantMine(action.row, action.cell, action.mine),
                 halted : false,
+                result : '',
             };
         case OPEN_CELL : {
             const tableData = [...state.tableData];
@@ -83,6 +96,7 @@ const reducer = (state, action) => {
 
             //한번 체크한 주변칸은..중복으로 체크하지 않는다.
             const checked = [];
+            let openedCount = 0;
 
             //주변칸들 체크하는 함수
             const checkAround = (row, cell) => {
@@ -100,6 +114,7 @@ const reducer = (state, action) => {
                 } else {
                     checked.push(row + ',' + cell);
                 }
+                openedCount += 1;
                 //클릭 주변 숫자보이기
                 let around = [];
                 //윗줄이 있는경우
@@ -161,9 +176,19 @@ const reducer = (state, action) => {
 
             //내 주변으로 한번 검사
             checkAround(action.row, action.cell);
+            let halted = false;
+            let result = '';
+            if (state.data.row * state.data.cell - state.data.mine === state.openedCount + openedCount) {
+                //승리
+                halted = true;
+                result = 'You win!';
+            }
             return {
                 ...state,
-                tableData,                
+                tableData, 
+                openedCount : state.openedCount + openedCount,
+                halted,
+                result,               
             };
         }
         case CLICK_MINE : {
@@ -222,6 +247,7 @@ const reducer = (state, action) => {
               tableData,
             };
         }
+        
         default : 
         return state;
     }
