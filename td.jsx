@@ -9,9 +9,6 @@ const getTdStyle = (code) => {
                 background : 'dodgerblue',
             };
         case CODE.CLICKED_MINE :
-            return {
-                background : 'white',
-            }
         case CODE.OPENED :
             return {
                 background : 'skyblue',
@@ -28,7 +25,7 @@ const getTdStyle = (code) => {
             };
         default : 
             return {
-                background : 'white',
+                background : 'skyblue',
             };
     }
 };
@@ -48,7 +45,7 @@ const getTdText = (code) => {
         case CODE.QUESTION :
             return '❓';
         default :
-            return '';    
+            return code;    
     }
 };
 

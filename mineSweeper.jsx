@@ -75,7 +75,7 @@ const reducer = (state, action) => {
         case OPEN_CELL : {
             const tableData = [...state.tableData];
             tableData[action.row] = [...state.tableData[action.row]];
-            tableData[action.row][action.cell] = CODE.OPENED;
+            //tableData[action.row][action.cell] = CODE.OPENED;
             // 클릭한 칸이 code.opened로 바뀐다, td에서 dispatch해주라
 
             //클릭 주변 숫자보이기
@@ -83,28 +83,30 @@ const reducer = (state, action) => {
             //윗줄이 있는경우
             //윗세칸 concat 넣어주고
             if(tableData[action.row - 1]) {
-                around.concat(
+                around = around.concat(
                     tableData[action.row - 1][action.cell - 1],
                     tableData[action.row - 1][action.cell],
                     tableData[action.row - 1][action.cell + 1],
                 );
             }
             //양옆칸
-                around.concat(
+                around = around.concat(
                     tableData[action.row][action.cell - 1],
                     tableData[action.row][action.cell + 1],
                 );
             //아랫줄있는지 확인, 있는경우
             //아랫줄 넣어주기
             if(tableData[action.row + 1]){
-                around.concat(
+                around = around.concat(
                     tableData[action.row + 1][action.cell - 1],
                     tableData[action.row + 1][action.cell],
                     tableData[action.row + 1][action.cell + 1],
                 );
             }
-                
-            
+            //주변 8칸 중에 filter로 몇개가 있는지 카운트   
+            const count = around.filter((v) => [CODE.MINE, CODE.FLAG_MINE, CODE.QUESTION_MINE].includes(v)).length;
+            console.log(count);
+            tableData[action.row][action.cell] = count;
             return {
                 ...state,
                 tableData,                
