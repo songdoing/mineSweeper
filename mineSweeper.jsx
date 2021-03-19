@@ -74,39 +74,93 @@ const reducer = (state, action) => {
             };
         case OPEN_CELL : {
             const tableData = [...state.tableData];
-            tableData[action.row] = [...state.tableData[action.row]];
-            //tableData[action.row][action.cell] = CODE.OPENED;
+            //tableData[action.row] = [...state.tableData[action.row]];
+            //불변성지키기 위해 위처럼(한칸만 새복제) 했는데, 옆칸옆칸 계속 count를 해서 
+            //한꺼번에 열도록 하기 위해서는 모두 새로운 객체로 복제
+            tableData.forEach((row, i) => {
+                tableData[i] = [...row];
+            });
+
+            //한번 체크한 주변칸은..중복으로 체크하지 않는다.
+            const checked = [];
+
+            //주변칸들 체크하는 함수
+            const checkAround = (row, cell) => {
+                //주변칸들이 오픈,깃발,퀘스천 이미있으면 return
+                if ([CODE.OPENED, CODE.FLAG_MINE, CODE.FLAG, CODE.QUESTION_MINE, CODE.QUESTION].includes(tableData[row][cell])) {
+                    return;
+                }
+                //상하좌우가 칸이 없는 경우 return
+                if (row < 0 || row >= tableData.length || cell < 0 || cell >= tableData[0].length) {
+                    return;
+                }
+                //이미 검사한 칸이면 return
+                if (checked.includes(row + ',' + cell)) {
+                    return;
+                } else {
+                    checked.push(row + ',' + cell);
+                }
+                //클릭 주변 숫자보이기
+                let around = [];
+                //윗줄이 있는경우
+                //윗세칸 concat 넣어주고
+                if(tableData[row - 1]) {
+                    around = around.concat(
+                        tableData[row - 1][cell - 1],
+                        tableData[row - 1][cell],
+                        tableData[row - 1][cell + 1],
+                    );
+                }
+                //양옆칸
+                    around = around.concat(
+                        tableData[row][cell - 1],
+                        tableData[row][cell + 1],
+                    );
+                //아랫줄있는지 확인, 있는경우
+                //아랫줄 넣어주기
+                if(tableData[row + 1]){
+                    around = around.concat(
+                        tableData[row + 1][cell - 1],
+                        tableData[row + 1][cell],
+                        tableData[row + 1][cell + 1],
+                    );
+                }
+                //좌,우칸은 자바스크립트 특성상 undefined로 되고, filter에서 사라짐
+                //주변 8칸 중에 filter로 몇개가 있는지 카운트   
+                const count = around.filter((v) => [CODE.MINE, CODE.FLAG_MINE, CODE.QUESTION_MINE].includes(v)).length;
+                //console.log(count);
+                
+                //주변 칸 한번에 열기
+                if(count === 0) {
+                    //주변칸을 확인하여 near 배열에 넣기
+                    const near = [];
+                    if (row -1 > -1) {
+                        near.push([row - 1, cell -1]);
+                        near.push([row -1, cell]);
+                        near.push([row -1, cell + 1]);
+                    }
+                    near.push([row, cell - 1]);
+                    near.push([row, cell + 1]);
+                    if(row + 1 < tableData.length) {
+                        near.push([row + 1, cell -1]);
+                        near.push([row + 1, cell]);
+                        near.push([row + 1, cell + 1]);
+                    }
+                    near.forEach((n) => {
+                    //주변칸이 오픈된 상태가 아닌경우에 체크할것
+                    if (tableData[n[0]][n[1]] !== CODE.OPENED) {
+                        checkAround(n[0], n[1]);
+                    }                        
+                    });
+                } 
+                tableData[row][cell] = count;
+            }; //end checkAround
+
+            //tableData[action.row][action.cell] = CODE.OPENED; 밑에 count로 바꿈
             // 클릭한 칸이 code.opened로 바뀐다, td에서 dispatch해주라
 
-            //클릭 주변 숫자보이기
-            let around = [];
-            //윗줄이 있는경우
-            //윗세칸 concat 넣어주고
-            if(tableData[action.row - 1]) {
-                around = around.concat(
-                    tableData[action.row - 1][action.cell - 1],
-                    tableData[action.row - 1][action.cell],
-                    tableData[action.row - 1][action.cell + 1],
-                );
-            }
-            //양옆칸
-                around = around.concat(
-                    tableData[action.row][action.cell - 1],
-                    tableData[action.row][action.cell + 1],
-                );
-            //아랫줄있는지 확인, 있는경우
-            //아랫줄 넣어주기
-            if(tableData[action.row + 1]){
-                around = around.concat(
-                    tableData[action.row + 1][action.cell - 1],
-                    tableData[action.row + 1][action.cell],
-                    tableData[action.row + 1][action.cell + 1],
-                );
-            }
-            //주변 8칸 중에 filter로 몇개가 있는지 카운트   
-            const count = around.filter((v) => [CODE.MINE, CODE.FLAG_MINE, CODE.QUESTION_MINE].includes(v)).length;
-            console.log(count);
-            tableData[action.row][action.cell] = count;
+            //내 주변으로 한번 검사
+            checkAround(action.row, action.cell);
             return {
                 ...state,
                 tableData,                
