@@ -2,9 +2,9 @@ import React, { useState, useCallback, memo, useContext } from 'react';
 import {START_GAME, TableContext} from './mineSweeper';
 
 const Form = memo(() => {
-  const [row, setRow] = useState(10);
-  const [cell, setCell] = useState(10);
-  const [mine, setMine] = useState(20);
+  const [row, setRow] = useState(5);
+  const [cell, setCell] = useState(5);
+  const [mine, setMine] = useState(5);
   const { dispatch } = useContext(TableContext);
 
   const onChangeRow = useCallback((e) => {

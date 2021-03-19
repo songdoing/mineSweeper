@@ -1,4 +1,4 @@
-import React, {useReducer, createContext, useMemo} from 'react';
+import React, {useEffect, useReducer, createContext, useMemo} from 'react';
 import Table from './table';
 import Form from './form';
 
@@ -68,6 +68,7 @@ export const CLICK_MINE = 'CLICK_MINE';
 export const FLAG_CELL = 'FLAG_CELL';
 export const QUESTION_CELL = 'QUESTION_CELL';
 export const NORMALIZE_CELL = 'NORMALIZE_CELL';
+export const INCREMENT_TIMER = 'INCREMENT_TIMER';
 
 
 const reducer = (state, action) => {
@@ -84,6 +85,7 @@ const reducer = (state, action) => {
                 tableData : plantMine(action.row, action.cell, action.mine),
                 halted : false,
                 result : '',
+                timer : 0,
             };
         case OPEN_CELL : {
             const tableData = [...state.tableData];
@@ -114,7 +116,7 @@ const reducer = (state, action) => {
                 } else {
                     checked.push(row + ',' + cell);
                 }
-                openedCount += 1;
+               
                 //클릭 주변 숫자보이기
                 let around = [];
                 //윗줄이 있는경우
@@ -168,6 +170,10 @@ const reducer = (state, action) => {
                     }                        
                     });
                 } 
+                if (tableData[row][cell] === CODE.NORMAL) { // 내 칸이 닫힌 칸이면 카운트 증가
+                    //이미 열려있는 칸은 중복되어도 카운트 하지 않는다
+                    openedCount += 1;
+                }
                 tableData[row][cell] = count;
             }; //end checkAround
 
@@ -181,7 +187,7 @@ const reducer = (state, action) => {
             if (state.data.row * state.data.cell - state.data.mine === state.openedCount + openedCount) {
                 //승리
                 halted = true;
-                result = 'You win!';
+                result = `You win in ${state.timer} sec.`;
             }
             return {
                 ...state,
@@ -195,10 +201,12 @@ const reducer = (state, action) => {
             const tableData = [...state.tableData];
             tableData[action.row] = [...state.tableData[action.row]];
             tableData[action.row][action.cell] = CODE.CLICKED_MINE;
+            let result = `You set off a bomb. Try again.`
             return {
                 ...state,
                 tableData,
                 halted : true,
+                result,
             };
         }
         //보통칸-깃발칸-물음표칸-보통칸 : 우클릭할때마다 순환
@@ -247,7 +255,12 @@ const reducer = (state, action) => {
               tableData,
             };
         }
-        
+        case INCREMENT_TIMER : {
+            return {
+                ...state,
+                timer : state.timer + 1,
+            }
+        }
         default : 
         return state;
     }
@@ -261,13 +274,25 @@ const MineSweeper = () => {
     const {tableData, halted, timer, result} = state;
     const value = useMemo(() => ({tableData: tableData, halted : halted, dispatch}), [tableData, halted]);
 
+    useEffect(() => {
+        let timer;
+        if (halted === false) {
+            timer = setInterval(() => {
+                dispatch({type : INCREMENT_TIMER});
+            }, 1000);
+        }        
+        return () => {
+            clearInterval(timer);
+        }
+    }, [halted]);
+
     return(
         //value안에 컴퍼넌트에서 가져다 쓸 데이터를 적는다..근데 여기다 적으면
         //render될때마다 value라는 객체 생성되고 그 밑에 있는 컴퍼넌트도 다시 재렌더링
         //그래서 cashing를 해준다
         <TableContext.Provider value={value}>
         <Form />
-        <div>{timer}</div>
+        <div>TIMER : {timer}</div>
         <Table />
         <div>{result}</div>
         </TableContext.Provider>
