@@ -1,4 +1,4 @@
-import React, {useContext, useCallback, memo} from 'react';
+import React, {useContext, useCallback, memo, useMemo} from 'react';
 import { CODE, OPEN_CELL, CLICK_MINE, FLAG_CELL, QUESTION_CELL, NORMALIZE_CELL, TableContext } from './mineSweeper';
 
 const getTdStyle = (code) => {
@@ -99,13 +99,15 @@ const Td = memo(( { rowIndex, cellIndex }) => {
         }
     }, [tableData[rowIndex][cellIndex], halted]);
 
-    return (
+    //contextAPI를 쓰면 브라우저에서 계속 리렌더링처럼 보이나
+    //return부분이 rerender되지 않도록.. 딱 1번만 실행되도록 useMemo 사용
+    return useMemo(() => (
         <td
             style = {getTdStyle(tableData[rowIndex][cellIndex])}
             onClick = {onClickTd}
             onContextMenu = {onRightClickTd}
         >{getTdText(tableData[rowIndex][cellIndex])}</td>
-    );
+    ), [tableData[rowIndex][cellIndex]]);
 });
 
 export default Td;
